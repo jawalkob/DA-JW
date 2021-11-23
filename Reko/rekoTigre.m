@@ -1,15 +1,10 @@
-function [] = rekoTigre(fileName,numAngles, distance, varargin)
-
+function [] = rekoTigre(fileName,numAngles, distance, resPath ,varargin)
+    mkdir(resPath, "RekoRes");
+    resPath=resPath+"RekoRes";
     %%Validate inputs
     if ~isstring(fileName)
         error("fileName needs to be of type string")
     end
-    
-    %if isempty(filePath)
-    %    filePathBool = boolean(0);
-    %elseif ~isstring(filePath)
-    %    error("filePath needs to be of type string")
-    %end
     
     if ~isnumeric(numAngles)
         error("numAngles needs to be of type Integer")
@@ -23,9 +18,11 @@ function [] = rekoTigre(fileName,numAngles, distance, varargin)
         warning("no algorithm choice provided - using FDK")
         algos = ["FDK"];
     else
-        algos = varargin;
+        algos = string(varargin{:});
     end
-
+    %%Make directory for results
+    mkdir(resPath, "RekoRes")
+    resPath=resPath+"RekoRes\";
     %% Geometry for Z-position 200 und %170
     zPos = distance;
     switch zPos
@@ -50,7 +47,7 @@ function [] = rekoTigre(fileName,numAngles, distance, varargin)
     end
     
     % Detector parameters
-    geo.nDetector=[2302; 3198];					        % number of pixels              (px)
+    geo.nDetector=[3198, 2302];					        % number of pixels              (px)
     geo.dDetector=[0.127; 0.127]; 					    % size of each pixel            (mm)
     geo.sDetector=geo.nDetector.*geo.dDetector;         % total size of the detector    (mm)
     
@@ -91,12 +88,12 @@ function [] = rekoTigre(fileName,numAngles, distance, varargin)
     parpool();
     
     % Preallocate    
-    proj = zeros(geo.nDetector(1),geo.nDetector(2),numAngles,'single','codistributed');
+    proj = zeros(geo.nDetector(2),geo.nDetector(1),numAngles,'single','codistributed');
     proj = gather(proj);
     
     % Load Images    
     parfor j=1:numAngles
-        proj(:,:,j)=single(imread(append("radios/",sprintf(fileNameBase,j-1)),"tif"))
+        proj(:,:,j)=single(imread(sprintf(fileNameBase,j-1),"tif"))
     end
     
     % Shut down pool    
@@ -109,18 +106,20 @@ function [] = rekoTigre(fileName,numAngles, distance, varargin)
     niter=60;
     if any(strcmpi("FDK",algos)) 
         imgFDK=FDK(proj,geo,angles);
-        save(append(fileName,"_FDK"),"imgFDK");
+        save(resPath+fileName+"FDK","imgFDK",'-v7.3');
         %niftiwrite(imgFDK,append(char(fileName),'FDK.nii'))
+        disp("FDK done")
     end
     if any(strcmpi("OSSART",algos))
-        
         imgOSSART=OS_SART(proj,geo,angles,niter);
-        save(append(fileName,"_OS-SART"),"imgOSSART");
+        save(resPath+fileName+"OS-SART","imgOSSART",'-v7.3');
         %niftiwrite(imgOSSART,append(char(fileName),'OSSART.nii'))
+        disp("OS-SART done")
     end
     if any(strcmpi("CGLS",algos))
         imgCGLS = CGLS(proj,geo,angles,niter);
-        save(append(fileName,"CGLS"),"imgCGLS")
+        save(resPath+fileName+"CGLS","imgCGLS",'-v7.3');
+        disp("Krylov done")
     end
     if any(strcmpi("OS-ASD-POCS",algos))
         epsilon=im3Dnorm(Ax(imgFDK,geo,angles)-proj,'L2')*0.15;
@@ -130,11 +129,13 @@ function [] = rekoTigre(fileName,numAngles, distance, varargin)
                     'TViter',25,'maxL2err',epsilon,'alpha',alpha1,... % these are very important
                      'Verbose',false,...% less important.
                       'BlockSize',size(angles,2)/10,'OrderStrategy','angularDistance'); %OSC options
-        save(append(fileName,"OSASDPOCS1"),"imgOSASDPOCS1","alpha1","epsilon");
+        save(resPath+fileName+"OSASDPOCS-alpha1","imgOSASDPOCS1","alpha1","epsilon",'-v7.3');
         imgOSASDPOCS2=OS_ASD_POCS(proj,geo,angles,niter,...
                     'TViter',25,'maxL2err',epsilon,'alpha',alpha2,... % these are very important
                      'Verbose',false,...% less important.
                       'BlockSize',size(angles,2)/10,'OrderStrategy','angularDistance'); %OSC options
-        save(append(fileName,"OSASDPOCS2"),"imgOSASDPOCS2","alpha2","epsilon");
+        save(resPath+fileName+"OSASDPOCS-apha2","imgOSASDPOCS2","alpha2","epsilon",'-v7.3');
+        disp("OS-ASD-POCS done")
     end
+    disp("reconstruction done")
 end
