@@ -1,0 +1,1 @@
+rekoTigre("DA_JW_7-1__",1440,200,["FDK","OSSART","CGLS","OS-ASD-POCS"])
