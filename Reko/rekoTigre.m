@@ -47,7 +47,7 @@ function [] = rekoTigre(fileName,numAngles, distance, resPath ,varargin)
     end
     
     % Detector parameters
-    geo.nDetector=[3198, 2302];					        % number of pixels              (px)
+    geo.nDetector=[3198; 2302];					        % number of pixels              (px)
     geo.dDetector=[0.127; 0.127]; 					    % size of each pixel            (mm)
     geo.sDetector=geo.nDetector.*geo.dDetector;         % total size of the detector    (mm)
     

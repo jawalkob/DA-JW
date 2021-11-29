@@ -39,7 +39,7 @@ function [] = rekoTigreReduced(fileName,numAngles, distance, resPath, varargin)
             geo.DSD = 824.34;                           % Distance Source Detector      (mm)
             geo.DSO = 30.38;                            % Distance Source Origin        (mm)
             % Image parameters
-            geo.dVoxel=[0.00468;0.00468;0.00468];                                                   
+            geo.dVoxel=[0.00468;0.00468;0.00468].*3;                                                   
             % Optional Parameters                                            
             geo.COR=15.520089574216115;                 % y direction displacement for 
                                                         % centre of rotation
@@ -56,11 +56,11 @@ function [] = rekoTigreReduced(fileName,numAngles, distance, resPath, varargin)
     
     % Detector parameters
     geo.nDetector=[1066;768];					        % number of pixels              (px)
-    geo.dDetector=[0.127*3; 0.127*3]; 					    % size of each pixel            (mm)
+    geo.dDetector=[0.127; 0.127].*3; 					    % size of each pixel            (mm)
     geo.sDetector=geo.nDetector.*geo.dDetector;         % total size of the detector    (mm)
     
     % Image parameters
-    geo.nVoxel=[1066; 1066; 768];                        % number of voxels              (vx)
+    geo.nVoxel=[1066;1066;768];                        % number of voxels              (vx)
     geo.sVoxel=geo.dVoxel.*geo.nVoxel;
     %geo.sVoxel=[256;256;256];                          % total size of the image       (mm)
     %geo.dVoxel=geo.sVoxel./geo.nVoxel;                 % size of each voxel            (mm)
