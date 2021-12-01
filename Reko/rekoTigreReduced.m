@@ -55,7 +55,7 @@ function [] = rekoTigreReduced(fileName,numAngles, distance, resPath, varargin)
     end
     
     % Detector parameters
-    geo.nDetector=[1066;768];					        % number of pixels              (px)
+    geo.nDetector=[768;1066];					        % number of pixels              (px)
     geo.dDetector=[0.127; 0.127].*3; 					    % size of each pixel            (mm)
     geo.sDetector=geo.nDetector.*geo.dDetector;         % total size of the detector    (mm)
     
@@ -97,7 +97,7 @@ function [] = rekoTigreReduced(fileName,numAngles, distance, resPath, varargin)
     parpool();
     
     % Preallocate    
-    proj = zeros(geo.nDetector(2),geo.nDetector(1),numFiles,'single','codistributed');
+    proj = zeros(geo.nDetector(1),geo.nDetector(2),numFiles,'single','codistributed');
     proj = gather(proj);
     disp("preallocation done")
     % Load Images    
