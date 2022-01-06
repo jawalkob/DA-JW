@@ -13,8 +13,8 @@ inpVol = cell(size(patchIn,1),1);
 inpResponse = cell(size(patchIn,1),1);
 
 % 5 augmentations: nil,rot90,fliplr,flipud,rot90(fliplr)
-fliprot = @(x) rot90(fliplr(x));
-augType = {@rot90,@fliplr,@flipud,fliprot};
+%fliprot = @(x) rot90(fliplr(x));
+augType = {@rot90,@fliplr,@flipud};%,fliprot
 for id=1:size(patchIn,1) 
     rndIdx = randi(8,1);
     tmpImg =  patchIn.InputImage{id};
